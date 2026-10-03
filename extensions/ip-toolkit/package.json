@@ -1,0 +1,181 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "ip-toolkit",
+  "title": "IP Toolkit",
+  "description": "See your external (public) and internal (local) IP addresses, then copy or paste them at the cursor in one step.",
+  "icon": "extension-icon.png",
+  "author": "veilwalker",
+  "platforms": [
+    "macOS",
+    "Windows"
+  ],
+  "categories": [
+    "System",
+    "Developer Tools",
+    "Web"
+  ],
+  "keywords": [
+    "ip",
+    "public ip",
+    "wan",
+    "lan",
+    "ipv4",
+    "ipv6",
+    "network",
+    "interface"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "show-my-ip",
+      "title": "Show My IP",
+      "subtitle": "IP Toolkit",
+      "description": "List your public IP and the local addresses of every network interface, with copy and paste actions",
+      "mode": "view",
+      "keywords": [
+        "ip",
+        "wan",
+        "lan",
+        "network",
+        "interface"
+      ],
+      "preferences": [
+        {
+          "name": "showIPv6",
+          "title": "Public IPv6",
+          "label": "Also look up the public IPv6 address",
+          "description": "Query the public IPv6 address in addition to IPv4. Keep it off on networks without IPv6 so the list opens faster",
+          "type": "checkbox",
+          "default": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "copy-my-ip",
+      "title": "Copy My IP",
+      "subtitle": "IP Toolkit",
+      "description": "Copy your external or internal IP to the clipboard without opening a view",
+      "mode": "no-view",
+      "keywords": [
+        "ip",
+        "public ip",
+        "local ip",
+        "wan",
+        "lan",
+        "clipboard"
+      ],
+      "arguments": [
+        {
+          "name": "scope",
+          "type": "dropdown",
+          "placeholder": "External",
+          "required": false,
+          "data": [
+            {
+              "title": "External",
+              "value": "external"
+            },
+            {
+              "title": "Internal",
+              "value": "internal"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        {
+          "name": "ipVersion",
+          "title": "IP Version",
+          "description": "Which address family to copy",
+          "type": "dropdown",
+          "default": "ipv4",
+          "required": false,
+          "data": [
+            {
+              "title": "IPv4",
+              "value": "ipv4"
+            },
+            {
+              "title": "IPv6",
+              "value": "ipv6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "paste-my-ip",
+      "title": "Paste My IP",
+      "subtitle": "IP Toolkit",
+      "description": "Paste your external or internal IP at the cursor of the frontmost app; it also stays in the clipboard",
+      "mode": "no-view",
+      "keywords": [
+        "ip",
+        "public ip",
+        "local ip",
+        "wan",
+        "lan",
+        "type"
+      ],
+      "arguments": [
+        {
+          "name": "scope",
+          "type": "dropdown",
+          "placeholder": "External",
+          "required": false,
+          "data": [
+            {
+              "title": "External",
+              "value": "external"
+            },
+            {
+              "title": "Internal",
+              "value": "internal"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        {
+          "name": "ipVersion",
+          "title": "IP Version",
+          "description": "Which address family to paste",
+          "type": "dropdown",
+          "default": "ipv4",
+          "required": false,
+          "data": [
+            {
+              "title": "IPv4",
+              "value": "ipv4"
+            },
+            {
+              "title": "IPv6",
+              "value": "ipv6"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^2.6.2",
+    "@raycast/utils": "^2.3.2"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.2.0",
+    "@types/node": "22.19.17",
+    "@types/react": "19.0.10",
+    "eslint": "^10.5.0",
+    "prettier": "^3.8.5",
+    "typescript": "^6.0.3"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
