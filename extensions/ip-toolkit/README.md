@@ -1,8 +1,8 @@
 # IP Toolkit
 
-See your external (public) IP (via [ip.me](https://ip.me) with fallback services) and internal (local) network addresses inside Raycast, then copy or paste them at the cursor in one step.
+Everything about your IP and network connection inside Raycast: public and local addresses, gateway, DNS and Wi-Fi, a public IP change monitor with history, WHOIS, a subnet calculator, a port scanner, a speed test and one-step public tunnels.
 
-Works on **macOS** and **Windows**. No accounts, no API keys, no analytics.
+Works on **Windows**. No accounts, no API keys, no analytics.
 
 ![Show My IP](media/show-my-ip.png)
 
@@ -10,17 +10,27 @@ Works on **macOS** and **Windows**. No accounts, no API keys, no analytics.
 
 | Command | Mode | What it does |
 | --- | --- | --- |
-| **Show My IP** | view | Lists your public IPv4 (and optionally IPv6) plus the address of every active network interface. Each row has copy and paste actions and an optional detail panel with CIDR, netmask, MAC and family. |
+| **Show My IP** | view | Public IPv4 (optionally IPv6) cross-checked by two services, default gateway, DNS servers, Wi-Fi network, running tunnels and every local interface address. |
 | **Copy My IP** | no-view | Copies your external or internal IP to the clipboard. Nothing opens; you only see a short confirmation. |
 | **Paste My IP** | no-view | Pastes your external or internal IP at the cursor of the frontmost app (it also stays in the clipboard). |
+| **Monitor Public IP** | background | Checks the public IP every 5 minutes, shows it under the command name and notifies you when it changes. |
+| **Public IP History** | view | Every public IP the monitor has seen, with when it appeared and how long it lasted. |
+| **Whois Lookup** | view | Owner, network range, abuse contact and registration dates of an IP, domain or AS number (RDAP). |
+| **Subnet Calculator** | view | Network, broadcast, host range, netmask, wildcard and host count for IPv4 and IPv6. |
+| **Port Scan** | view | Checks which TCP ports are open on a host you own or are allowed to test. |
+| **Speed Test** | view | Latency, download and upload speed using Cloudflare's speed test servers. |
+| **Manage Tunnels** | view | Shows running cloudflared and ngrok tunnels and exposes a local port with a temporary public URL. |
 
 ### Show My IP
 
-- **Public IP** section: the address the internet sees, with the service that answered.
-- **Local Addresses** section: every non-loopback interface, IPv4 first. The address that currently reaches the internet is tagged **Default Route**.
-- Local addresses appear instantly; the public IP row fills in as soon as a service answers.
-- Actions: `Copy Public IPv4` / `Copy Address`, `Paste at Cursor`, `Copy CIDR`, `Copy MAC Address`, `Copy All as Text`, `Toggle Details`, `Refresh`, `Open in Browser`.
-- Type in the search bar to filter by address, interface name, family (`ipv4`, `ipv6`) or `lan` / `wan`.
+- **Public IP**: the address the internet sees. Two services are asked at the same time:
+  - **✓ Confirmed** (green): two independent services returned the same address.
+  - **⚠ Mismatch** (orange): the services disagree, which usually means several internet links, load-balanced NAT or a proxy.
+  - **Single Source**: only one service answered.
+  - **VPN?**: the default route goes through an adapter that looks like a VPN (WireGuard, OpenVPN, Tailscale and similar).
+- **Network**: default gateway, DNS servers, connected Wi-Fi network with signal, and cloudflared or ngrok processes that are running.
+- **Local Addresses**: every non-loopback interface, IPv4 first. The address that currently reaches the internet is tagged **Default Route**.
+- Actions: copy and paste any value, `Whois Lookup` on the public IP, `Copy CIDR`, `Copy MAC Address`, `Copy All as Text`, `Toggle Details`, `Refresh`, `Open in Browser`.
 
 ![Show My IP with details](media/show-my-ip-details.png)
 
@@ -30,12 +40,43 @@ Works on **macOS** and **Windows**. No accounts, no API keys, no analytics.
 
 Both commands take an optional **External / Internal** argument (default: External). Type the command, press Tab to pick the scope, then Enter.
 
-- **External**: the public address the internet sees, looked up through the services below.
+- **External**: the public address the internet sees.
 - **Internal**: the local address of the interface holding the default route; if it cannot be detected, the first non-loopback (and, for IPv6, non-link-local) address.
 
-No view opens. A short toast shows during the lookup, then a confirmation such as `Copied external IPv4 203.0.113.7` or `Pasted internal IPv4 192.168.0.10`. Paste My IP closes Raycast first so the address lands in the app that was in front; if pasting fails, the IP is still in the clipboard and the confirmation says so.
+Paste My IP closes Raycast first so the address lands in the app that was in front; if pasting fails, the IP is still in the clipboard and the confirmation says so. Assign hotkeys or aliases in Raycast settings for one-keystroke access.
 
-Assign hotkeys or aliases to these commands in Raycast settings for one-keystroke access.
+### Monitor Public IP and Public IP History
+
+Run **Monitor Public IP** once to turn it on. From then on Raycast runs it in the background every 5 minutes. The current IP and the time of the last check appear under the command name in the root search, and a notification appears when the address changes. Disable the command in Raycast settings to stop monitoring.
+
+**Public IP History** lists the last 100 addresses, with the current one on top. Each entry has `Copy IP` and `Whois Lookup`. `Check Now` records the current IP immediately and `Clear History` deletes everything.
+
+### Whois Lookup
+
+Type an IP address, a domain or an AS number (`AS15169` or `15169`) as the argument. With no argument it looks up your public IPv4. The query goes to [rdap.org](https://rdap.org), which forwards it to the registry responsible for the record (ARIN, RIPE, LACNIC, Registro.br, Verisign and others).
+
+### Subnet Calculator
+
+Type an address with a prefix (`192.168.0.10/24`, `2001:db8::/48`) or with a netmask (`10.0.0.1 255.255.255.252`). With an empty search bar it shows the subnet of your default-route address. Each value can be copied or pasted, and `Copy All` copies the whole result.
+
+### Port Scan
+
+Pick a host (default `127.0.0.1`), a port preset (common ports, 1-1024 or a custom list such as `22,80,443,8000-8100`) and a timeout. Up to 1024 ports are checked, 64 at a time, with a plain TCP connect: a port is **open** when the connection is accepted, **closed** when it is refused and **filtered** when there is no answer before the timeout.
+
+Only scan hosts you own or are authorized to test.
+
+### Speed Test
+
+Measures latency (median of 5 requests), then downloads 25 MB and uploads 5 MB through `speed.cloudflare.com`. Results are shown in Mbps (1 Mbps = 1,000,000 bits per second, the same unit used by internet providers and speed test sites). The test uses about 30 MB of data.
+
+### Manage Tunnels
+
+- **Active Tunnels**: tunnels started from this command, tunnels reported by a local ngrok agent, and cloudflared or ngrok processes started elsewhere (for example a cloudflared Windows service).
+- **Start a Tunnel**: type a local port, confirm, and the public URL is copied to the clipboard.
+  - **cloudflared** creates a temporary `trycloudflare.com` address. No account is needed and the URL changes every time.
+  - **ngrok** uses your ngrok account. Run `ngrok config add-authtoken <token>` once before the first tunnel.
+- If a tool is missing, the command offers the official installer, the download page and the `winget install` command. Nothing is downloaded or installed automatically.
+- Anyone with the URL can reach the exposed port while the tunnel runs. Use `Stop Tunnel` to close it.
 
 ## Preferences
 
@@ -47,23 +88,16 @@ Assign hotkeys or aliases to these commands in Raycast settings for one-keystrok
 
 ## How it works
 
-- The public IP is requested from `ip.me` first. If it has not answered after 1.5 seconds the next service is started in parallel and the first valid answer wins: `ip4only.me`, `api.ipify.org`, `checkip.amazonaws.com` for IPv4; `ip.me`, `ip6only.me`, `api6.ipify.org`, `ipv6.icanhazip.com` for IPv6. Each service gets at most 4 seconds and the whole lookup never takes more than 10 seconds. Connections are pinned to the IP family being looked up, so an IPv4 lookup never travels over IPv6.
-- Local addresses come from the operating system through Node's `os.networkInterfaces()`. Nothing leaves the machine for this part.
-- The default-route address is estimated by connecting a UDP socket towards a public resolver and reading which local address the OS picked. No packet is sent; this may differ from the route chosen for a specific destination, VPN, or proxy.
+- **Public IP** comes from `ip.me`, `ip4only.me`, `api.ipify.org` and `checkip.amazonaws.com` for IPv4, and `ip.me`, `ip6only.me`, `api6.ipify.org` and `ipv6.icanhazip.com` for IPv6. Show My IP asks them in parallel and stops as soon as two agree; Copy My IP, Paste My IP and the monitor take the first valid answer. Each service gets at most 4 seconds, the whole lookup at most 10 seconds, and connections are pinned to the IP family being looked up.
+- **Local addresses** come from Node's `os.networkInterfaces()`. The default-route address is found by connecting a UDP socket towards a public resolver and reading which local address Windows picked. No packet is sent.
+- **Gateway and DNS** come from the PowerShell cmdlets `Get-NetRoute` and `Get-DnsClientServerAddress`, **Wi-Fi** from `netsh wlan show interfaces`, and **running tunnels** from `tasklist`. These take about a second, so this part of the list fills in after the local addresses.
 
 ### Privacy
 
-Public-IP lookups send HTTPS requests to the services listed above, which see the requesting public IP and standard request metadata. A UDP socket is connected for route selection without sending a packet. The extension stores nothing and sends no analytics.
-
-## Development
-
-```bash
-npm install
-npm run dev      # loads the extension into Raycast and watches for changes
-npm run build    # distribution build (does not run the TypeScript compiler)
-npm run lint     # manifest, assets, ESLint + Prettier checks
-npx tsc --noEmit -p tsconfig.json  # independent type check
-```
+- Public IP lookups, WHOIS queries and the speed test send HTTPS requests to the services named above, which see your public IP and standard request metadata.
+- Port Scan only connects to the host you type. Manage Tunnels starts cloudflared or ngrok on your computer, which connect to Cloudflare or ngrok.
+- The public IP history and the list of tunnels started from Manage Tunnels are stored in Raycast's local storage on your computer. Tunnel logs are written to the extension's support folder.
+- The extension sends no analytics.
 
 ## License
 

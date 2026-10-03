@@ -2,9 +2,13 @@
 
 ## [Initial Version] - {PR_MERGE_DATE}
 
-- Add `Show My IP` command: a list with the public IPv4 (optionally IPv6) and every local interface address, with copy, paste, CIDR, MAC and detail panel actions
+- Add `Show My IP` command: public IPv4 (optionally IPv6) cross-checked by two services, default gateway, DNS servers, Wi-Fi network, running tunnels, a VPN hint and every local interface address, with copy, paste and Whois actions
 - Add `Copy My IP` command: copies the external or internal IP (IPv4 or IPv6) to the clipboard without opening a view
 - Add `Paste My IP` command: pastes the external or internal IP at the cursor of the frontmost app
-- Resolve the public IP through ip.me with hedged fallback to ip4only.me, ipify and checkip.amazonaws.com (IPv6: ip.me, ip6only.me, api6.ipify.org, ipv6.icanhazip.com), family-pinned connections and a 10 second overall budget
-- Detect which local address holds the default route and tag it in the list
-- Support macOS and Windows
+- Add `Monitor Public IP` background command: checks the public IP every 5 minutes, shows it under the command name and notifies when it changes
+- Add `Public IP History` command: lists every public IP seen by the monitor
+- Add `Whois Lookup` command: RDAP lookup for IP addresses, domains and AS numbers
+- Add `Subnet Calculator` command: network, broadcast, host range and host count for IPv4 and IPv6
+- Add `Port Scan` command: TCP connect scan of up to 1024 ports
+- Add `Speed Test` command: latency, download and upload through Cloudflare's speed test servers
+- Add `Manage Tunnels` command: lists cloudflared and ngrok tunnels and exposes a local port through trycloudflare.com or ngrok

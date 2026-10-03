@@ -2,11 +2,10 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "ip-toolkit",
   "title": "IP Toolkit",
-  "description": "See your external (public) and internal (local) IP addresses, then copy or paste them at the cursor in one step.",
+  "description": "Public and local IPs, gateway, DNS and Wi-Fi, IP change history, WHOIS, subnet calculator, port scan, speed test and quick public tunnels.",
   "icon": "extension-icon.png",
   "author": "veilwalker",
   "platforms": [
-    "macOS",
     "Windows"
   ],
   "categories": [
@@ -17,12 +16,16 @@
   "keywords": [
     "ip",
     "public ip",
-    "wan",
-    "lan",
-    "ipv4",
     "ipv6",
     "network",
-    "interface"
+    "dns",
+    "whois",
+    "subnet",
+    "port scan",
+    "speed test",
+    "tunnel",
+    "cloudflared",
+    "ngrok"
   ],
   "license": "MIT",
   "commands": [
@@ -155,6 +158,114 @@
             }
           ]
         }
+      ]
+    },
+    {
+      "name": "monitor-public-ip",
+      "title": "Monitor Public IP",
+      "subtitle": "IP Toolkit",
+      "description": "Check the public IP every 5 minutes in the background, show it under the command name and notify when it changes",
+      "mode": "no-view",
+      "interval": "5m",
+      "keywords": [
+        "ip",
+        "monitor",
+        "change",
+        "alert",
+        "background"
+      ]
+    },
+    {
+      "name": "public-ip-history",
+      "title": "Public IP History",
+      "subtitle": "IP Toolkit",
+      "description": "List every public IP recorded by Monitor Public IP, with when each one was seen",
+      "mode": "view",
+      "keywords": [
+        "ip",
+        "history",
+        "log",
+        "change"
+      ]
+    },
+    {
+      "name": "whois-lookup",
+      "title": "Whois Lookup",
+      "subtitle": "IP Toolkit",
+      "description": "Look up the owner, network range and abuse contact of an IP, domain or ASN through RDAP",
+      "mode": "view",
+      "keywords": [
+        "whois",
+        "rdap",
+        "asn",
+        "domain",
+        "owner",
+        "abuse"
+      ],
+      "arguments": [
+        {
+          "name": "query",
+          "type": "text",
+          "placeholder": "IP, domain or ASN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "subnet-calculator",
+      "title": "Subnet Calculator",
+      "subtitle": "IP Toolkit",
+      "description": "Calculate network, broadcast, host range and host count for an IPv4 or IPv6 CIDR",
+      "mode": "view",
+      "keywords": [
+        "subnet",
+        "cidr",
+        "netmask",
+        "calculator",
+        "broadcast"
+      ]
+    },
+    {
+      "name": "port-scan",
+      "title": "Port Scan",
+      "subtitle": "IP Toolkit",
+      "description": "Check which TCP ports are open on a host you own or are authorized to test",
+      "mode": "view",
+      "keywords": [
+        "port",
+        "scan",
+        "tcp",
+        "open ports"
+      ]
+    },
+    {
+      "name": "speed-test",
+      "title": "Speed Test",
+      "subtitle": "IP Toolkit",
+      "description": "Measure latency, download and upload speed using Cloudflare's speed test servers",
+      "mode": "view",
+      "keywords": [
+        "speed",
+        "bandwidth",
+        "download",
+        "upload",
+        "latency",
+        "ping"
+      ]
+    },
+    {
+      "name": "manage-tunnels",
+      "title": "Manage Tunnels",
+      "subtitle": "IP Toolkit",
+      "description": "See running cloudflared and ngrok tunnels and expose a local port with a temporary public URL",
+      "mode": "view",
+      "keywords": [
+        "tunnel",
+        "cloudflared",
+        "trycloudflare",
+        "ngrok",
+        "expose",
+        "localhost"
       ]
     }
   ],
