@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Color, Detail, Icon, Keyboard } from "@raycast/api";
+import { Action, ActionPanel, Color, Detail, Icon } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import { useRef } from "react";
 import { getPublicIP } from "../lib/public-ip";
@@ -106,12 +106,7 @@ export function WhoisView(props: { query?: string }) {
               <Action.OpenInBrowser title="Open RDAP Record" url={data.url} />
             </>
           )}
-          <Action
-            title="Refresh"
-            icon={Icon.ArrowClockwise}
-            shortcut={Keyboard.Shortcut.Common.Refresh}
-            onAction={revalidate}
-          />
+          <Action title="Refresh" icon={Icon.ArrowClockwise} onAction={revalidate} />
         </ActionPanel>
       }
     />

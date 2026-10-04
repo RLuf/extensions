@@ -8,7 +8,6 @@ import {
   environment,
   Form,
   Icon,
-  Keyboard,
   List,
   showToast,
   Toast,
@@ -94,16 +93,10 @@ export default function Command() {
                   title="Stop Tunnel"
                   icon={Icon.Stop}
                   style={Action.Style.Destructive}
-                  shortcut={Keyboard.Shortcut.Common.Remove}
                   onAction={() => stop(tunnel.pid, tunnel.url)}
                 />
                 <Action.Open title="Open Log File" target={tunnel.logFile} icon={Icon.Document} />
-                <Action
-                  title="Refresh"
-                  icon={Icon.ArrowClockwise}
-                  shortcut={Keyboard.Shortcut.Common.Refresh}
-                  onAction={revalidate}
-                />
+                <Action title="Refresh" icon={Icon.ArrowClockwise} onAction={revalidate} />
               </ActionPanel>
             }
           />
@@ -164,12 +157,7 @@ function ToolItem(props: { tool: TunnelTool; executable?: string; onChange: () =
             <Action.OpenInBrowser title="Download Installer" url={info.directDownload} icon={Icon.Download} />
             <Action.OpenInBrowser title="Open Download Page" url={info.downloadPage} />
             <Action.CopyToClipboard title="Copy Winget Install Command" content={installCommand} />
-            <Action
-              title="Check Again"
-              icon={Icon.ArrowClockwise}
-              shortcut={Keyboard.Shortcut.Common.Refresh}
-              onAction={onChange}
-            />
+            <Action title="Check Again" icon={Icon.ArrowClockwise} onAction={onChange} />
           </ActionPanel>
         }
       />

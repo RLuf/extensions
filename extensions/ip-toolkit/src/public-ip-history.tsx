@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Alert, Color, confirmAlert, Icon, Keyboard, List, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Alert, Color, confirmAlert, Icon, List, showToast, Toast } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import { WhoisView } from "./components/whois-view";
 import { clearHistory, readHistory, recordIP } from "./lib/ip-history";
@@ -45,20 +45,9 @@ export default function Command() {
 
   const commonActions = (
     <>
-      <Action
-        title="Check Now"
-        icon={Icon.ArrowClockwise}
-        shortcut={Keyboard.Shortcut.Common.Refresh}
-        onAction={checkNow}
-      />
+      <Action title="Check Now" icon={Icon.ArrowClockwise} onAction={checkNow} />
       {(data?.length ?? 0) > 0 && (
-        <Action
-          title="Clear History"
-          icon={Icon.Trash}
-          style={Action.Style.Destructive}
-          shortcut={Keyboard.Shortcut.Common.RemoveAll}
-          onAction={clear}
-        />
+        <Action title="Clear History" icon={Icon.Trash} style={Action.Style.Destructive} onAction={clear} />
       )}
     </>
   );

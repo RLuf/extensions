@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Color, Icon, Keyboard, List, getPreferenceValues } from "@raycast/api";
+import { Action, ActionPanel, Color, Icon, List, getPreferenceValues } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import { ReactNode, useRef, useState } from "react";
 import { WhoisView } from "./components/whois-view";
@@ -12,15 +12,6 @@ interface PublicIPs {
   ipv4: PublicIPState;
   ipv6?: PublicIPState;
 }
-
-const COPY_CIDR_SHORTCUT: Keyboard.Shortcut = {
-  macOS: { modifiers: ["cmd"], key: "d" },
-  Windows: { modifiers: ["ctrl"], key: "d" },
-};
-const COPY_MAC_SHORTCUT: Keyboard.Shortcut = {
-  macOS: { modifiers: ["cmd"], key: "m" },
-  Windows: { modifiers: ["ctrl"], key: "m" },
-};
 
 const AGREEMENT_TAG: Record<Agreement, { value: string; color: Color; tooltip: string }> = {
   confirmed: { value: "✓ Confirmed", color: Color.Green, tooltip: "Two independent services returned this address" },
@@ -119,22 +110,15 @@ export default function Command() {
         <Action
           title="Toggle Details"
           icon={Icon.AppWindowSidebarRight}
-          shortcut={Keyboard.Shortcut.Common.ToggleQuickLook}
           onAction={() => setIsShowingDetail((value) => !value)}
         />
       )}
-      <Action
-        title="Refresh"
-        icon={Icon.ArrowClockwise}
-        shortcut={Keyboard.Shortcut.Common.Refresh}
-        onAction={refresh}
-      />
+      <Action title="Refresh" icon={Icon.ArrowClockwise} onAction={refresh} />
       {hasRows && (
         <Action.CopyToClipboard
           title="Copy All as Text"
           icon={Icon.Clipboard}
           content={snapshotAsText(publicIPs.data, local.data, network.data)}
-          shortcut={Keyboard.Shortcut.Common.Copy}
         />
       )}
       <Action.OpenInBrowser title="Open in Browser" url="https://ip.me" icon={Icon.Globe} />
@@ -427,10 +411,8 @@ function LocalAddressItem(props: { entry: LocalAddress; isShowingDetail: boolean
           <ActionPanel.Section>
             <Action.CopyToClipboard title="Copy Address" content={entry.address} />
             <Action.Paste title="Paste at Cursor" content={entry.address} />
-            {entry.cidr && (
-              <Action.CopyToClipboard title="Copy CIDR" content={entry.cidr} shortcut={COPY_CIDR_SHORTCUT} />
-            )}
-            <Action.CopyToClipboard title="Copy MAC Address" content={entry.mac} shortcut={COPY_MAC_SHORTCUT} />
+            {entry.cidr && <Action.CopyToClipboard title="Copy CIDR" content={entry.cidr} />}
+            <Action.CopyToClipboard title="Copy MAC Address" content={entry.mac} />
           </ActionPanel.Section>
           <ActionPanel.Section>{children}</ActionPanel.Section>
         </ActionPanel>

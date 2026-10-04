@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Detail, Icon, Keyboard, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Detail, Icon, showToast, Toast } from "@raycast/api";
 import { useEffect, useState } from "react";
 import {
   DOWNLOAD_BYTES,
@@ -92,12 +92,7 @@ export default function Command() {
       actions={
         <ActionPanel>
           {!running && (
-            <Action
-              title="Run Again"
-              icon={Icon.ArrowClockwise}
-              shortcut={Keyboard.Shortcut.Common.Refresh}
-              onAction={() => setRunId((value) => value + 1)}
-            />
+            <Action title="Run Again" icon={Icon.ArrowClockwise} onAction={() => setRunId((value) => value + 1)} />
           )}
           <Action.CopyToClipboard title="Copy Results" content={asText(result)} />
           <Action.OpenInBrowser title="Open Cloudflare Speed Test" url="https://speed.cloudflare.com" />
