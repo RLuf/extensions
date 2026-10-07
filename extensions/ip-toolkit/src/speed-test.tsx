@@ -6,6 +6,7 @@ import {
   measureLatency,
   measureUpload,
   SpeedResult,
+  toMBps,
   UPLOAD_BYTES,
 } from "./lib/speedtest";
 
@@ -23,11 +24,16 @@ function show(value: number | undefined, unit: string, digits = 1): string {
   return value === undefined ? "…" : `${value.toFixed(digits)} ${unit}`;
 }
 
+function bytesPerSecond(mbps: number | undefined): string {
+  return mbps === undefined ? "…" : `${toMBps(mbps).toFixed(1)} MB/s`;
+}
+
 function asText(result: SpeedResult): string {
   return [
     `Latency: ${show(result.latencyMs, "ms", 0)}`,
-    `Download: ${show(result.downloadMbps, "Mbps")}`,
-    `Upload: ${show(result.uploadMbps, "Mbps")}`,
+    `Jitter: ${show(result.jitterMs, "ms")}`,
+    `Download: ${show(result.downloadMbps, "Mbps")} (${bytesPerSecond(result.downloadMbps)})`,
+    `Upload: ${show(result.uploadMbps, "Mbps")} (${bytesPerSecond(result.uploadMbps)})`,
   ].join("\n");
 }
 
@@ -46,8 +52,8 @@ export default function Command() {
     (async () => {
       try {
         setPhase("latency");
-        const latencyMs = await measureLatency(signal);
-        setResult((current) => ({ ...current, latencyMs }));
+        const { latencyMs, jitterMs } = await measureLatency(signal);
+        setResult((current) => ({ ...current, latencyMs, jitterMs }));
         setPhase("download");
         const downloadMbps = await measureDownload(signal);
         setResult((current) => ({ ...current, downloadMbps }));
@@ -72,11 +78,14 @@ export default function Command() {
   const markdown = [
     "# Speed Test",
     "",
-    "| Metric | Result |",
-    "| --- | --- |",
-    `| Latency | ${show(result.latencyMs, "ms", 0)} |`,
-    `| Download | ${show(result.downloadMbps, "Mbps")} |`,
-    `| Upload | ${show(result.uploadMbps, "Mbps")} |`,
+    "| Metric | Result | In bytes |",
+    "| --- | --- | --- |",
+    `| Latency | ${show(result.latencyMs, "ms", 0)} | |`,
+    `| Jitter | ${show(result.jitterMs, "ms")} | |`,
+    `| Download | ${show(result.downloadMbps, "Mbps")} | ${bytesPerSecond(result.downloadMbps)} |`,
+    `| Upload | ${show(result.uploadMbps, "Mbps")} | ${bytesPerSecond(result.uploadMbps)} |`,
+    "",
+    "Mbps is the unit internet plans are sold in; MB/s (Mbps ÷ 8) is what browsers show while downloading.",
     "",
     error ? `**Error:** ${error}` : `_${PHASE_LABEL[phase]}_`,
     "",

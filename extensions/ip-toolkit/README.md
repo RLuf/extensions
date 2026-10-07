@@ -67,7 +67,7 @@ Only scan hosts you own or are authorized to test.
 
 ### Speed Test
 
-Measures latency (median of 5 requests), then downloads 25 MB and uploads 5 MB through `speed.cloudflare.com`. Results are shown in Mbps (1 Mbps = 1,000,000 bits per second, the same unit used by internet providers and speed test sites). The test uses about 30 MB of data.
+Measures latency (median of 10 requests) and jitter (average difference between consecutive requests), then downloads 25 MB and uploads 5 MB through `speed.cloudflare.com`. Speeds are shown in Mbps (1 Mbps = 1,000,000 bits per second, the unit internet plans are sold in) and in MB/s (Mbps ÷ 8, what browsers show while downloading). It is a quick single-connection estimate, so latency, jitter and caching along the path affect the result. The test uses about 30 MB of data.
 
 ### Manage Tunnels
 
