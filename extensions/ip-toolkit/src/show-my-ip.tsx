@@ -4,7 +4,7 @@ import { ReactNode, useRef, useState } from "react";
 import { WhoisView } from "./components/whois-view";
 import { getLocalNetworkInfo, LocalAddress, LocalNetworkInfo } from "./lib/local-ip";
 import { Agreement, getPublicIPConsensus, IPVersion, PublicIPConsensus } from "./lib/public-ip";
-import { getNetworkDetails, NetworkDetails } from "./lib/windows-net";
+import { getNetworkDetails, NetworkDetails, TunnelAdapter } from "./lib/windows-net";
 
 type PublicIPState = { status: "ok"; result: PublicIPConsensus } | { status: "unavailable"; reason: string };
 
@@ -102,7 +102,7 @@ export default function Command() {
     publicIPs.revalidate();
   };
   const hasRows = Boolean(publicIPs.data) || (local.data?.addresses.length ?? 0) > 0;
-  const vpnAdapters = network.data?.vpnAdapters ?? [];
+  const tunnelAdapters = network.data?.tunnelAdapters ?? [];
 
   const sharedActions = (
     <>
@@ -136,7 +136,7 @@ export default function Command() {
           <PublicIPItem
             version="IPv4"
             state={publicIPs.data.ipv4}
-            vpnAdapters={vpnAdapters}
+            tunnelAdapters={tunnelAdapters}
             isShowingDetail={isShowingDetail}
           >
             {sharedActions}
@@ -145,7 +145,7 @@ export default function Command() {
             <PublicIPItem
               version="IPv6"
               state={publicIPs.data.ipv6}
-              vpnAdapters={vpnAdapters}
+              tunnelAdapters={tunnelAdapters}
               isShowingDetail={isShowingDetail}
             >
               {sharedActions}
@@ -184,11 +184,14 @@ export default function Command() {
 function PublicIPItem(props: {
   version: "IPv4" | "IPv6";
   state: PublicIPState;
-  vpnAdapters: string[];
+  tunnelAdapters: TunnelAdapter[];
   isShowingDetail: boolean;
   children: ReactNode;
 }) {
-  const { version, state, vpnAdapters, isShowingDetail, children } = props;
+  const { version, state, tunnelAdapters, isShowingDetail, children } = props;
+  const tunnelNames = tunnelAdapters
+    .map((adapter) => (adapter.description ? `${adapter.alias} (${adapter.description})` : adapter.alias))
+    .join(", ");
   const result = state.status === "ok" ? state.result : undefined;
   const ip = result?.ip;
   const subtitle = result
@@ -200,10 +203,10 @@ function PublicIPItem(props: {
 
   const accessories: List.Item.Accessory[] = [];
   if (!isShowingDetail) {
-    if (vpnAdapters.length > 0) {
+    if (tunnelAdapters.length > 0) {
       accessories.push({
-        tag: { value: "VPN?", color: Color.Purple },
-        tooltip: `Default route goes through ${vpnAdapters.join(", ")}`,
+        tag: { value: "Tunnel", color: Color.Purple },
+        tooltip: `Internet traffic leaves through the tunnel adapter ${tunnelNames}`,
       });
     }
     if (agreement) {
@@ -242,8 +245,8 @@ function PublicIPItem(props: {
               ) : (
                 <List.Item.Detail.Metadata.Label title="Reason" text={subtitle} />
               )}
-              {vpnAdapters.length > 0 && (
-                <List.Item.Detail.Metadata.Label title="VPN Adapter" text={vpnAdapters.join(", ")} />
+              {tunnelAdapters.length > 0 && (
+                <List.Item.Detail.Metadata.Label title="Tunnel Adapter" text={tunnelNames} />
               )}
             </List.Item.Detail.Metadata>
           }

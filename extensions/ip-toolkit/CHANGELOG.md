@@ -2,7 +2,7 @@
 
 ## [Initial Version] - {PR_MERGE_DATE}
 
-- Add `Show My IP` command: public IPv4 (optionally IPv6) cross-checked by two services, default gateway, DNS servers, Wi-Fi network, running tunnels, a VPN hint and every local interface address, with copy, paste and Whois actions
+- Add `Show My IP` command: public IPv4 (optionally IPv6) cross-checked by two services, default gateway, DNS servers, Wi-Fi network, running tunnels, a tunnel adapter hint and every local interface address, with copy, paste and Whois actions
 - Add `Copy My IP` command: copies the external or internal IP (IPv4 or IPv6) to the clipboard without opening a view
 - Add `Paste My IP` command: pastes the external or internal IP at the cursor of the frontmost app
 - Add `Monitor Public IP` background command: checks the public IP every 5 minutes, shows it under the command name and notifies when it changes

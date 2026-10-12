@@ -27,7 +27,7 @@ Works on **Windows**. No accounts, no API keys, no analytics.
   - **✓ Confirmed** (green): two independent services returned the same address.
   - **⚠ Mismatch** (orange): the services disagree, which usually means several internet links, load-balanced NAT or a proxy.
   - **Single Source**: only one service answered.
-  - **VPN?**: the default route goes through an adapter that looks like a VPN (WireGuard, OpenVPN, Tailscale and similar).
+  - **Tunnel**: internet traffic leaves through a virtual tunnel adapter (TUN/TAP, Wintun, WireGuard and similar), detected from the adapter name and its driver description. It only shows that a tunnel holds the default route, not what is on the other end.
 - **Network**: default gateway, DNS servers, connected Wi-Fi network with signal, and cloudflared or ngrok processes that are running.
 - **Local Addresses**: every non-loopback interface, IPv4 first. The address that currently reaches the internet is tagged **Default Route**.
 - Actions: copy and paste any value, `Whois Lookup` on the public IP, `Copy CIDR`, `Copy MAC Address`, `Copy All as Text`, `Toggle Details`, `Refresh`, `Open in Browser`.

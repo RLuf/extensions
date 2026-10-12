@@ -29,18 +29,33 @@ export interface RunningProcess {
   pid: number;
 }
 
+export interface TunnelAdapter {
+  /** Name shown in Windows, e.g. "Ethernet 3". Users can rename it. */
+  alias: string;
+  /** Driver description, e.g. "TAP-Windows Adapter V9" or "WireGuard Tunnel". */
+  description?: string;
+}
+
 export interface NetworkDetails {
   gateways: DefaultGateway[];
   dns: DnsServers[];
   wifi: WifiConnection[];
-  /** Adapter names that look like a VPN and currently hold a default route. */
-  vpnAdapters: string[];
+  /**
+   * Virtual tunnel adapters (TUN/TAP, Wintun, WireGuard...) that hold a default route.
+   * This only shows that internet traffic leaves through a tunnel; it says nothing
+   * about what is on the other end.
+   */
+  tunnelAdapters: TunnelAdapter[];
   tunnels: RunningProcess[];
 }
 
-/** Adapter name fragments of common VPN clients. A heuristic, not a guarantee. */
-const VPN_ADAPTER_PATTERN =
-  /vpn|wireguard|wintun|openvpn|tap-windows|\btap\b|\btun\b|tailscale|zerotier|nordlynx|proton|mullvad|cloudflare warp|fortinet|globalprotect|anyconnect|pangp/i;
+/**
+ * Fragments of tunnel driver descriptions and adapter names. Checked against both,
+ * because clients such as OpenVPN create an adapter named "Ethernet 3" whose only
+ * tell is the driver description. A heuristic, not a guarantee.
+ */
+const TUNNEL_ADAPTER_PATTERN =
+  /wintun|wireguard|tap-windows|\btap\b|\btun\b|openvpn|cloudflare ?warp|tailscale|zerotier|nordlynx|fortinet|globalprotect|anyconnect|pangp|vpn/i;
 
 /** Executables that open public tunnels to this machine. */
 const TUNNEL_EXECUTABLES = ["cloudflared.exe", "ngrok.exe"];
@@ -56,11 +71,14 @@ $routes = @(Get-NetRoute -DestinationPrefix '0.0.0.0/0','::/0' -ErrorAction Sile
   Select-Object InterfaceAlias, InterfaceIndex, NextHop, AddressFamily, RouteMetric)
 $indexes = @($routes | Select-Object -ExpandProperty InterfaceIndex -Unique)
 $dns = @()
+$adapters = @()
 if ($indexes.Count -gt 0) {
   $dns = @(Get-DnsClientServerAddress -InterfaceIndex $indexes -ErrorAction SilentlyContinue |
     Select-Object InterfaceAlias, InterfaceIndex, AddressFamily, ServerAddresses)
+  $adapters = @(Get-NetAdapter -InterfaceIndex $indexes -IncludeHidden -ErrorAction SilentlyContinue |
+    Select-Object InterfaceIndex, InterfaceDescription)
 }
-@{ routes = $routes; dns = $dns } | ConvertTo-Json -Compress -Depth 4
+@{ routes = $routes; dns = $dns; adapters = $adapters } | ConvertTo-Json -Compress -Depth 4
 `;
 
 export function run(file: string, args: string[], timeout = 8000): Promise<string> {
@@ -117,12 +135,28 @@ interface RawDns {
   ServerAddresses?: string | string[] | null;
 }
 
-export function parseRouteAndDns(json: string): { gateways: DefaultGateway[]; dns: DnsServers[] } {
+interface RawAdapter {
+  InterfaceIndex?: number;
+  InterfaceDescription?: string;
+}
+
+export interface RouteAndDns {
+  gateways: DefaultGateway[];
+  dns: DnsServers[];
+  /** Driver description by interface index, for the interfaces holding a default route. */
+  descriptions: Record<number, string>;
+}
+
+export function parseRouteAndDns(json: string): RouteAndDns {
   const trimmed = json.trim();
   if (!trimmed) {
-    return { gateways: [], dns: [] };
+    return { gateways: [], dns: [], descriptions: {} };
   }
-  const parsed = JSON.parse(trimmed) as { routes?: RawRoute | RawRoute[]; dns?: RawDns | RawDns[] };
+  const parsed = JSON.parse(trimmed) as {
+    routes?: RawRoute | RawRoute[];
+    dns?: RawDns | RawDns[];
+    adapters?: RawAdapter | RawAdapter[];
+  };
   const gateways = asArray(parsed.routes)
     .filter((route) => route.NextHop && route.NextHop !== "0.0.0.0" && route.NextHop !== "::")
     .map((route) => ({
@@ -140,7 +174,13 @@ export function parseRouteAndDns(json: string): { gateways: DefaultGateway[]; dn
       servers: asArray(entry.ServerAddresses).filter((server) => typeof server === "string" && server.length > 0),
     }))
     .filter((entry) => entry.servers.length > 0);
-  return { gateways, dns };
+  const descriptions: Record<number, string> = {};
+  for (const adapter of asArray(parsed.adapters)) {
+    if (typeof adapter.InterfaceIndex === "number" && adapter.InterfaceDescription) {
+      descriptions[adapter.InterfaceIndex] = adapter.InterfaceDescription;
+    }
+  }
+  return { gateways, dns, descriptions };
 }
 
 /**
@@ -190,11 +230,11 @@ export async function getTunnelProcesses(): Promise<RunningProcess[]> {
   return processes.filter((process) => TUNNEL_EXECUTABLES.includes(process.name.toLowerCase()));
 }
 
-async function getRouteAndDns(): Promise<{ gateways: DefaultGateway[]; dns: DnsServers[] }> {
+async function getRouteAndDns(): Promise<RouteAndDns> {
   try {
     return parseRouteAndDns(await runPowerShell(ROUTE_AND_DNS_SCRIPT));
   } catch {
-    return { gateways: [], dns: [] };
+    return { gateways: [], dns: [], descriptions: {} };
   }
 }
 
@@ -207,13 +247,33 @@ async function getWifi(): Promise<WifiConnection[]> {
   }
 }
 
-export function isVpnAdapter(name: string): boolean {
-  return VPN_ADAPTER_PATTERN.test(name);
+export function isTunnelAdapter(alias: string, description?: string): boolean {
+  return TUNNEL_ADAPTER_PATTERN.test(alias) || (description !== undefined && TUNNEL_ADAPTER_PATTERN.test(description));
+}
+
+/** Default-route interfaces whose name or driver description looks like a tunnel adapter. */
+export function findTunnelAdapters(gateways: DefaultGateway[], descriptions: Record<number, string>): TunnelAdapter[] {
+  const seen = new Set<number>();
+  const adapters: TunnelAdapter[] = [];
+  for (const gateway of gateways) {
+    if (seen.has(gateway.interfaceIndex)) {
+      continue;
+    }
+    seen.add(gateway.interfaceIndex);
+    const description = descriptions[gateway.interfaceIndex];
+    if (isTunnelAdapter(gateway.interfaceAlias, description)) {
+      adapters.push({ alias: gateway.interfaceAlias, description });
+    }
+  }
+  return adapters;
 }
 
 /** Gateway, DNS, Wi-Fi and tunnel information. Every part degrades to empty on failure. */
 export async function getNetworkDetails(): Promise<NetworkDetails> {
-  const [{ gateways, dns }, wifi, tunnels] = await Promise.all([getRouteAndDns(), getWifi(), getTunnelProcesses()]);
-  const vpnAdapters = [...new Set(gateways.map((gateway) => gateway.interfaceAlias).filter(isVpnAdapter))];
-  return { gateways, dns, wifi, vpnAdapters, tunnels };
+  const [{ gateways, dns, descriptions }, wifi, tunnels] = await Promise.all([
+    getRouteAndDns(),
+    getWifi(),
+    getTunnelProcesses(),
+  ]);
+  return { gateways, dns, wifi, tunnelAdapters: findTunnelAdapters(gateways, descriptions), tunnels };
 }
