@@ -67,7 +67,11 @@ export default function Command() {
           actions={
             <ActionPanel>
               <Action.CopyToClipboard title="Copy IP" content={entry.ip} />
-              <Action.Push title="Whois Lookup" icon={Icon.MagnifyingGlass} target={<WhoisView query={entry.ip} />} />
+              <Action.Push
+                title="Whois Lookup"
+                icon={Icon.MagnifyingGlass}
+                target={<WhoisView query={entry.ip} navigationTitle={`Whois · ${entry.ip}`} />}
+              />
               {commonActions}
             </ActionPanel>
           }

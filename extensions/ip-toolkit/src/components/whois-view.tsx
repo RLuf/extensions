@@ -39,7 +39,11 @@ function toMarkdown(summary: RdapSummary): string {
   return lines.join("\n");
 }
 
-export function WhoisView(props: { query?: string }) {
+/**
+ * `navigationTitle` is only for pushed screens: the root Whois Lookup command keeps the
+ * title Raycast sets from the command name, as the Store guidelines require.
+ */
+export function WhoisView(props: { query?: string; navigationTitle?: string }) {
   const abortable = useRef<AbortController>(null);
   const { data, isLoading, error, revalidate } = usePromise(
     async (query: string | undefined) => {
@@ -60,7 +64,7 @@ export function WhoisView(props: { query?: string }) {
   return (
     <Detail
       isLoading={isLoading}
-      navigationTitle={data ? `Whois · ${data.query}` : "Whois Lookup"}
+      navigationTitle={props.navigationTitle}
       markdown={markdown}
       metadata={
         data && (

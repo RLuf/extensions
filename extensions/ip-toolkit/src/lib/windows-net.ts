@@ -115,7 +115,7 @@ function asArray<T>(value: T | T[] | null | undefined): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-/** Windows PowerShell serialises the AddressFamily enum as 2 (IPv4) or 23 (IPv6). */
+/** Windows PowerShell serializes the AddressFamily enum as 2 (IPv4) or 23 (IPv6). */
 function toFamily(value: unknown): AddressFamilyName {
   return value === 23 || value === "IPv6" || value === "InterNetworkV6" ? "IPv6" : "IPv4";
 }

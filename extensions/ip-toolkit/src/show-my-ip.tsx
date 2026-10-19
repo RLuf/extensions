@@ -258,7 +258,11 @@ function PublicIPItem(props: {
             <ActionPanel.Section>
               <Action.CopyToClipboard title={`Copy Public ${version}`} content={ip} />
               <Action.Paste title="Paste at Cursor" content={ip} />
-              <Action.Push title="Whois Lookup" icon={Icon.MagnifyingGlass} target={<WhoisView query={ip} />} />
+              <Action.Push
+                title="Whois Lookup"
+                icon={Icon.MagnifyingGlass}
+                target={<WhoisView query={ip} navigationTitle={`Whois · ${ip}`} />}
+              />
             </ActionPanel.Section>
           )}
           <ActionPanel.Section>{children}</ActionPanel.Section>

@@ -132,7 +132,7 @@ function ScanResults(props: { host: string; ports: number[]; timeoutMs: number }
   return (
     <List
       isLoading={!finished}
-      navigationTitle={finished ? `${open.length} Open on ${host}` : `Scanning ${done}/${ports.length}`}
+      navigationTitle={`Scan ${host}`}
       searchBarPlaceholder="Filter by port or service"
       searchBarAccessory={
         <List.Dropdown tooltip="Show" value={filter} onChange={setFilter}>
