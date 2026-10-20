@@ -1,5 +1,33 @@
 # Model Context Protocol Registry Changelog
 
+## [Add Runx, Sourcey, Frantic and Ausca MCP servers] - 2026-10-19
+
+- Add four first-party hosted MCP servers with current marks and direct HTTP connections in Raycast. Runx and Sourcey expose public read-only discovery, Frantic exposes public bounty reads and governed actions, and Ausca exposes keyless offer discovery with x402 payment required for paid calls. Other MCP clients retain the `mcp-remote` fallback.
+
+## [Add Local Commander MCP Server] - 2026-10-19
+
+- Add Local Commander to the official registry: connect Raycast AI to Windows 11 computers you own to read approved project files and Git state, run the checks and commands you authorize, and check local services. Hosted Streamable HTTP server at https://localcmd.app/mcp with OAuth 2.0 sign-in (dynamic client registration and PKCE), a direct HTTP connection in Raycast and an mcp-remote fallback for other clients.
+
+## [Add Wealthnow MCP Server] - 2026-10-19
+
+- Add Wealthnow MCP Server to the registry
+
+## [Add Dynamic Document API MCP Server] - 2026-10-19
+
+- Add Dynamic Document API to the official registry: render PDFs and images from templates, HTML or Markdown, merge PDFs and create validated XRechnung and ZUGFeRD e-invoices. Hosted Streamable HTTP server at https://mcp.dynamicdocumentapi.com/mcp with OAuth 2.1 sign-in (dynamic client registration and PKCE), a direct HTTP connection in Raycast and an mcp-remote fallback for other clients.
+
+## [Add ppl MCP Server] - 2026-10-18
+
+- Add ppl to the official registry: a personal CRM for AI agents to look up and update contacts, log interactions, keep notes and set reminders about the people in your life. Hosted Streamable HTTP server at https://withppl.com/mcp with OAuth 2.1 sign-in (dynamic client registration and PKCE), a direct HTTP connection in Raycast and an mcp-remote fallback for other clients.
+
+## [Add AffixIO MCP Server] - 2026-10-17
+
+- Add AffixIO to the official registry: generate and verify zero-knowledge proofs with post-quantum ML-DSA-65 attestations for AI agents, without exposing personal data. Hosted Streamable HTTP server at https://www.affix-io.com/mcp/ with OAuth 2.1 sign-in (dynamic client registration and PKCE), a direct HTTP connection in Raycast and an mcp-remote fallback for other clients.
+
+## [Add Posy MCP Server] - 2026-10-17
+
+- Add Posy to the official registry: build and edit a hand-made link-in-bio page, add, update, move and remove link tiles, set the theme and profile, import an existing page and publish. Hosted Streamable HTTP server at https://posy.page/api/mcp with OAuth 2.1 sign-in (dynamic client registration), a direct HTTP connection in Raycast and an mcp-remote fallback for other clients.
+
 ## [Add TopxAI Models MCP Server] - 2026-10-16
 
 - Add TopxAI Models to the official registry: list the TopxAI catalogue's text models with their prices, ask Claude, GPT, Grok, GLM, Kimi or DeepSeek from inside another model's conversation, and ask TypeSafe's Jev typed questions about a piece of text. Hosted Streamable HTTP server at https://ai.topxea.com/mcp/models, connected through `mcp-remote` with a TopxAI API key as a bearer header.
