@@ -18,7 +18,7 @@ Works on **Windows**. No accounts, no API keys, no analytics.
 | **Whois Lookup** | view | Owner, network range, abuse contact and registration dates of an IP, domain or AS number (RDAP). |
 | **Subnet Calculator** | view | Network, broadcast, host range, netmask, wildcard and host count for IPv4 and IPv6. |
 | **Port Scan** | view | Checks which TCP ports are open on a host you own or are allowed to test. |
-| **Speed Test** | view | Latency, download and upload speed using Cloudflare's speed test servers. |
+| **Speed Test** | view | Latency, jitter, download and upload speed using Cloudflare's speed test servers. |
 | **Manage Tunnels** | view | Shows running cloudflared and ngrok tunnels and exposes a local port with a temporary public URL. |
 
 ### Show My IP
@@ -90,7 +90,7 @@ Measures latency (median of 10 requests) and jitter (average difference between 
 
 - **Public IP** comes from `ip.me`, `ip4only.me`, `api.ipify.org` and `checkip.amazonaws.com` for IPv4, and `ip.me`, `ip6only.me`, `api6.ipify.org` and `ipv6.icanhazip.com` for IPv6. Show My IP asks them in parallel and stops as soon as two agree; Copy My IP, Paste My IP and the monitor take the first valid answer. Each service gets at most 4 seconds, the whole lookup at most 10 seconds, and connections are pinned to the IP family being looked up.
 - **Local addresses** come from Node's `os.networkInterfaces()`. The default-route address is found by connecting a UDP socket towards a public resolver and reading which local address Windows picked. No packet is sent.
-- **Gateway and DNS** come from the PowerShell cmdlets `Get-NetRoute` and `Get-DnsClientServerAddress`, **Wi-Fi** from `netsh wlan show interfaces`, and **running tunnels** from `tasklist`. These take about a second, so this part of the list fills in after the local addresses.
+- **Gateway and DNS** come from the PowerShell cmdlets `Get-NetRoute` and `Get-DnsClientServerAddress`, the **Tunnel** tag from `Get-NetAdapter` (driver description of the default-route adapter), **Wi-Fi** from `netsh wlan show interfaces`, and **running tunnels** from `tasklist`. These take a few seconds, so this part of the list fills in after the local addresses.
 
 ### Privacy
 

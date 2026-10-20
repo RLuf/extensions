@@ -242,7 +242,7 @@
       "name": "speed-test",
       "title": "Speed Test",
       "subtitle": "IP Toolkit",
-      "description": "Measure latency, download and upload speed using Cloudflare's speed test servers",
+      "description": "Measure latency, jitter, download and upload speed using Cloudflare's speed test servers",
       "mode": "view",
       "keywords": [
         "speed",
